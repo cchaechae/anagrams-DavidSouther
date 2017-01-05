@@ -50,26 +50,37 @@ public class AnagramsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //generating code
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_anagrams);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //load the words.txt file
         AssetManager assetManager = getAssets();
         try {
             InputStream inputStream = assetManager.open("words.txt");
             dictionary = new AnagramDictionary(inputStream);
+            //use the text file as dictionary
         } catch (IOException e) {
             Toast toast = Toast.makeText(this, "Could not load dictionary", Toast.LENGTH_LONG);
             toast.show();
         }
+
+        //loads the EditText
         // Set up the EditText box to process the content of the box when the user hits 'enter'
         final EditText editText = (EditText) findViewById(R.id.editText);
         editText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+        //GO= arrow
         editText.setImeOptions(EditorInfo.IME_ACTION_GO);
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
+                //when clicking the input button
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     processWord(editText);
                     handled = true;
@@ -79,6 +90,7 @@ public class AnagramsActivity extends AppCompatActivity {
         });
     }
 
+    //main part of the game
     private void processWord(EditText editText) {
         TextView resultView = (TextView) findViewById(R.id.resultView);
         String word = editText.getText().toString().trim().toLowerCase();
@@ -120,6 +132,7 @@ public class AnagramsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //when you click the button
     public boolean defaultAction(View view) {
         TextView gameStatus = (TextView) findViewById(R.id.gameStatusView);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -128,8 +141,12 @@ public class AnagramsActivity extends AppCompatActivity {
         if (currentWord == null) {
             currentWord = dictionary.pickGoodStarterWord();
             anagrams = dictionary.getAnagramsWithOneMoreLetter(currentWord);
+
+            //String.format(): like Stringbuilder but
             gameStatus.setText(Html.fromHtml(String.format(START_MESSAGE, currentWord.toUpperCase(), currentWord)));
             fab.setImageResource(android.R.drawable.ic_menu_help);
+
+            //reset
             fab.hide();
             resultView.setText("");
             editText.setText("");
